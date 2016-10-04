@@ -1,6 +1,6 @@
-name: "Onset"
+name: "Sound"
 layer {
-  name: "onset"
+  name: "sound"
   type: "Data"
   top: "data"
   top: "label"
@@ -11,13 +11,13 @@ layer {
     scale: '1/number of inputs'
   }
   data_param {
-    source: "../../data/<MUSIC>"
-    batch_size: 256
+    source: "../../data/esc10/ESC-10/<file>"
+    batch_size: 1000
     backend: LMDB
   }
 }
 layer {
-  name: "onset"
+  name: "mnist"
   type: "Data"
   top: "data"
   top: "label"
@@ -28,8 +28,8 @@ layer {
     scale: '1/number of	inputs'
   }
   data_param {
-    source: "../../data/esc10/ESC-10/<testfile>"
-    batch_size: 256
+    source: "examples/mnist/mnist_test_lmdb"
+    batch_size: 100
     backend: LMDB
   }
 }
@@ -45,9 +45,8 @@ layer {
     lr_mult: 2
   }
   convolution_param {
-    num_output: 10
-    kernel_w: 7
-    kernel_h: 3
+    num_output: 20
+    kernel_size: 5
     stride: 1
     weight_filler {
       type: "xavier"
@@ -64,10 +63,8 @@ layer {
   top: "pool1"
   pooling_param {
     pool: MAX
-    kernel_w: 3 #9/3 with no overlap = 3
-    kernel_h: 26 #78/3 with no overlap = 26
-    stride_h: 26
-    stride_w: 3
+    kernel_size: 2
+    stride: 2
   }
 }
 layer {
@@ -82,8 +79,8 @@ layer {
     lr_mult: 2
   }
   convolution_param {
-    num_output: 10
-    kernel_size: 3
+    num_output: 50
+    kernel_size: 5
     stride: 1
     weight_filler {
       type: "xavier"
@@ -100,9 +97,8 @@ layer {
   top: "pool2"
   pooling_param {
     pool: MAX
-    kernel_h: 1
-    kernel_w: 3
-    stride: 1
+    kernel_size: 2
+    stride: 2
   }
 }
 layer {
@@ -117,7 +113,7 @@ layer {
     lr_mult: 2
   }
   inner_product_param {
-    num_output: 256
+    num_output: 500
     weight_filler {
       type: "xavier"
     }
@@ -125,6 +121,12 @@ layer {
       type: "constant"
     }
   }
+}
+layer {
+  name: "relu1"
+  type: "ReLU"
+  bottom: "ip1"
+  top: "ip1"
 }
 layer {
   name: "ip2"
@@ -138,7 +140,7 @@ layer {
     lr_mult: 2
   }
   inner_product_param {
-    num_output: 256
+    num_output: 10
     weight_filler {
       type: "xavier"
     }
@@ -159,7 +161,7 @@ layer {
 }
 layer {
   name: "loss"
-  type: "SigmoidCrossEntropyLoss"
+  type: "SoftmaxWithLoss"
   bottom: "ip2"
   bottom: "label"
   top: "loss"

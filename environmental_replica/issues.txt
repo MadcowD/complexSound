@@ -1,1 +1,0 @@
-does caffe support rectangular filerts in convolutional layers (kernel size?
